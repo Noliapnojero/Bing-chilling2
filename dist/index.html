@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Experiencia web interactiva en 3D recreando el icónico Sony Walkman TPS-L2 con Three.js, físicas de botones mecánicos, audio analógico y casete animado." />
+  <title>Sony Walkman TPS-L2 • Experiencia 3D Interactiva Three.js</title>
+
+  <!-- Google Fonts: Orbitron & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script type="module" crossorigin src="/assets/index-C-KWgkSa.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-D3TgMT-T.css">
+</head>
+<body>
+  <!-- Canvas 3D Container -->
+  <div id="canvas-container"></div>
+
+  <!-- 3D Raycast Tooltip -->
+  <div id="tooltip-3d"></div>
+
+  <!-- Loading Screen Overlay -->
+  <div id="loading-screen">
+    <div class="loader-content">
+      <div class="brand-logo">SONY</div>
+      <div class="sub-brand">WALKMAN <span>TPS-L2</span></div>
+      <div class="tape-loader-icon">
+        <div class="loader-reel left"></div>
+        <div class="loader-tape"></div>
+        <div class="loader-reel right"></div>
+      </div>
+      <div id="loading-status">Ensamblando componentes 3D...</div>
+      <div class="progress-bar-wrap">
+        <div id="progress-bar"></div>
+      </div>
+      <div class="loading-hint">Modelos originales GLB • Creado con Three.js</div>
+    </div>
+  </div>
+
+  <!-- Top Status Bar -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <div class="badge-sony">SONY</div>
+      <div class="badge-model">
+        <span class="model-name">WALKMAN</span>
+        <span class="model-code">TPS-L2 • STEREO</span>
+      </div>
+    </div>
+
+    <div class="nav-center">
+      <div class="retro-lcd-display">
+        <div class="lcd-indicator" id="lcd-state">STOPPED</div>
+        <div class="lcd-track-title" id="track-title-marquee">MIXTAPE '84 • SYNTHWAVE DREAMS</div>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <div class="indicator-pill" id="batt-indicator">
+        <span class="pill-dot"></span> BATT 100%
+      </div>
+      <div class="indicator-pill hotline-pill" id="hotline-badge">
+        HOT LINE
+      </div>
+      <button id="btn-info" class="icon-btn" title="Información e instrucciones">?</button>
+    </div>
+  </header>
+
+  <!-- Camera Presets Floating Bar -->
+  <div class="camera-presets-bar">
+    <button class="cam-btn active" data-view="studio" id="cam-studio">🌐 Estudio 360°</button>
+    <button class="cam-btn" data-view="front" id="cam-front">🎛️ Vista Casete</button>
+    <button class="cam-btn" data-view="top" id="cam-top">🔘 Botones Superiores</button>
+    <button class="cam-btn" data-view="side" id="cam-side">⚡ Lateral</button>
+    <button class="cam-btn" id="btn-turntable">🔄 Girar Auto</button>
+  </div>
+
+  <!-- Floating HUD & Control Dock -->
+  <main class="bottom-dock">
+    <div class="dock-inner">
+      <!-- Section 1: Mechanical Tape Counter & VU Meter -->
+      <div class="dock-block block-meter">
+        <div class="block-label">TAPE COUNTER</div>
+        <div class="tape-counter-wrap">
+          <div class="counter-digit" id="cnt-digit-1">0</div>
+          <div class="counter-digit" id="cnt-digit-2">0</div>
+          <div class="counter-digit" id="cnt-digit-3">0</div>
+          <button id="btn-reset-counter" class="counter-reset-btn" title="Resetear contador">RESET</button>
+        </div>
+
+        <div class="vu-meter-wrap">
+          <div class="vu-channel">
+            <span class="ch-tag">L</span>
+            <div class="vu-bar" id="vu-bar-l">
+              <div class="vu-led green"></div>
+              <div class="vu-led green"></div>
+              <div class="vu-led green"></div>
+              <div class="vu-led amber"></div>
+              <div class="vu-led red"></div>
+            </div>
+          </div>
+          <div class="vu-channel">
+            <span class="ch-tag">R</span>
+            <div class="vu-bar" id="vu-bar-r">
+              <div class="vu-led green"></div>
+              <div class="vu-led green"></div>
+              <div class="vu-led green"></div>
+              <div class="vu-led amber"></div>
+              <div class="vu-led red"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Physical / UI Transport Buttons -->
+      <div class="dock-block block-transport">
+        <div class="block-label">TRANSPORT CONTROLS (Haz clic aquí o en el modelo 3D)</div>
+        <div class="transport-buttons">
+          <button class="t-btn btn-rew" id="ui-rew" title="Rebobinar">
+            <span class="btn-icon">◀◀</span>
+            <span class="btn-text">REW</span>
+          </button>
+          <button class="t-btn btn-play" id="ui-play" title="Reproducir (Púlsame o haz clic en el botón 3D)">
+            <span class="btn-icon">▶</span>
+            <span class="btn-text">PLAY</span>
+          </button>
+          <button class="t-btn btn-fwd" id="ui-fwd" title="Avance Rápido">
+            <span class="btn-icon">▶▶</span>
+            <span class="btn-text">FF</span>
+          </button>
+          <button class="t-btn btn-stop" id="ui-stop" title="Detener">
+            <span class="btn-icon">■</span>
+            <span class="btn-text">STOP</span>
+          </button>
+          <button class="t-btn btn-hotline" id="ui-hotline" title="Botón Naranja Hot Line (Atenuador de voz)">
+            <span class="btn-icon">🎙️</span>
+            <span class="btn-text">HOT LINE</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 3: Cassette Selector & Custom MP3 -->
+      <div class="dock-block block-mixtape">
+        <div class="block-label">MIXTAPE SELECTOR</div>
+        <div class="tape-selector-row">
+          <select id="tape-select" class="retro-select">
+            <option value="synthwave">⚡ Mixtape '84 (Synthwave)</option>
+            <option value="citypop">🌆 Tokyo Nights (City Pop)</option>
+            <option value="lofi">☕ Midnight Lo-Fi Tape</option>
+            <option value="custom">📁 Tu propio MP3 / Audio</option>
+          </select>
+          <input type="file" id="custom-file-input" accept="audio/*" style="display: none;" />
+          <button id="btn-upload-tape" class="secondary-btn" title="Cargar archivo MP3 personal">
+            📁 Cargar
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 4: Analog Vintage FX & Tone / Volume -->
+      <div class="dock-block block-effects">
+        <div class="block-label">ANALOG TAPE FX & EQ</div>
+        <div class="sliders-row">
+          <div class="slider-item">
+            <span class="slider-title">TONE (EQ)</span>
+            <input type="range" id="slider-tone" min="0" max="1" step="0.01" value="0.75" />
+          </div>
+          <div class="slider-item">
+            <span class="slider-title">VOLUMEN</span>
+            <input type="range" id="slider-volume" min="0" max="1" step="0.01" value="0.85" />
+          </div>
+        </div>
+        <div class="toggles-row">
+          <label class="retro-checkbox" title="Simulación de ruido analógico de cinta">
+            <input type="checkbox" id="chk-hiss" checked />
+            <span class="chk-custom"></span> Tape Hiss
+          </label>
+          <label class="retro-checkbox" title="Efecto de fluctuación tonal mecánica de casete">
+            <input type="checkbox" id="chk-flutter" checked />
+            <span class="chk-custom"></span> Wow & Flutter
+          </label>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Info / Instructions Modal -->
+  <div id="info-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Sony Walkman TPS-L2 • Experiencia Interactiva</h3>
+        <button id="modal-close" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>¡Bienvenido a la experiencia web 3D interactiva del Walkman TPS-L2!</strong></p>
+        <p>Este modelo está compuesto por los 8 objetos GLB originales ensamblados dinámicamente con Three.js:</p>
+        <ul>
+          <li><strong>Interacción 3D directa:</strong> Haz clic directamente sobre los botones del Walkman (PLAY, STOP, FWD, HOT LINE y el deslizador de TONO) para ver cómo se hunden mecánicamente y activan las funciones.</li>
+          <li><strong>Botón HOT LINE (Naranja):</strong> Al igual que en el Walkman de 1979, atenúa la música y aplica un filtro de micrófono analógico.</li>
+          <li><strong>Casete y Carretes 3D:</strong> Al reproducir música, observa los carretes girando y la cinta magnética en el interior de la ventana.</li>
+          <li><strong>Contador Mecánico y Vúmetro:</strong> Se sincronizan en tiempo real con el audio.</li>
+          <li><strong>Tus Propias Canciones:</strong> Puedes pulsar en <em>"Cargar"</em> para escuchar cualquier canción MP3 de tu ordenador en el Walkman.</li>
+          <li><strong>Controles de Cámara:</strong> Rota con el botón izquierdo del ratón, haz zoom con la rueda y desplázate con el botón derecho.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
