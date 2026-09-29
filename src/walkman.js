@@ -34,15 +34,16 @@ export class WalkmanModel {
   }
 
   async loadAllParts(onProgress) {
+    const baseUrl = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
     const parts = [
-      { id: 'chassis', path: '/GLB/Cube/Cube.glb', name: 'Chasis Principal' },
-      { id: 'hotline', path: '/GLB/Cube_001/Cube_001.glb', name: 'Botón Hot Line' },
-      { id: 'slider',  path: '/GLB/Cube_002/Cube_002.glb', name: 'Control Deslizante' },
-      { id: 'stop',    path: '/GLB/Cube_003/Cube_003.glb', name: 'Botón Stop / Eject' },
-      { id: 'fwd',     path: '/GLB/Cube_004/Cube_004.glb', name: 'Botón FWD / Avance' },
-      { id: 'play',    path: '/GLB/Cube_005/Cube_005.glb', name: 'Botón Play' },
-      { id: 'sony',    path: '/GLB/Empty_004/Empty_004.glb', name: 'Logo Sony' },
-      { id: 'walkman', path: '/GLB/Empty_006/Empty_006.glb', name: 'Logo Walkman' },
+      { id: 'chassis', path: `${baseUrl}GLB/Cube/Cube.glb`, name: 'Chasis Principal' },
+      { id: 'hotline', path: `${baseUrl}GLB/Cube_001/Cube_001.glb`, name: 'Botón Hot Line' },
+      { id: 'slider',  path: `${baseUrl}GLB/Cube_002/Cube_002.glb`, name: 'Control Deslizante' },
+      { id: 'stop',    path: `${baseUrl}GLB/Cube_003/Cube_003.glb`, name: 'Botón Stop / Eject' },
+      { id: 'fwd',     path: `${baseUrl}GLB/Cube_004/Cube_004.glb`, name: 'Botón FWD / Avance' },
+      { id: 'play',    path: `${baseUrl}GLB/Cube_005/Cube_005.glb`, name: 'Botón Play' },
+      { id: 'sony',    path: `${baseUrl}GLB/Empty_004/Empty_004.glb`, name: 'Logo Sony' },
+      { id: 'walkman', path: `${baseUrl}GLB/Empty_006/Empty_006.glb`, name: 'Logo Walkman' },
     ];
 
     let loadedCount = 0;
